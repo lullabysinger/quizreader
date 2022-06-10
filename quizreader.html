@@ -295,7 +295,7 @@ function setupGUI() {
             let topicArray = (question_data[(topicID-1)*2]);
             let topicString = topicArray[0];
 
-            let topicPrefix = (historyArray[topicID-1] == 1) ? '<i class="fa-solid fa-square-check"></i> <del>' : "";
+            let topicPrefix = (historyArray[topicID-1] == 1) ? '<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double">' : "";
             let topicSuffix = (historyArray[topicID-1] == 1) ? '</del>' : "";
 
             let newLabel = topicPrefix + '<b>' + '(' + topicID + ')</b> '+ topicString + topicSuffix;
@@ -303,13 +303,13 @@ function setupGUI() {
         }
 
         if (historyArray[12] == 1)
-            $('#ma').html('<i class="fa-solid fa-square-check"></i> <del> Mystery Box A </del>');
+            $('#ma').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Mystery Box A </del>');
 
         if (historyArray[13] == 1)
-            $('#mb').html('<i class="fa-solid fa-square-check"></i> <del> Mystery Box B </del>');
+            $('#mb').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Mystery Box B </del>');
 
         if (historyArray[14] == 1)
-            $('#spare').html('<i class="fa-solid fa-square-check"></i> <del> Spares </del>');
+            $('#spare').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Spares </del>');
 
     }
 
