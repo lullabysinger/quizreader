@@ -320,11 +320,12 @@ function setupGUI() {
         hideGUIexcept(['#question_gui', "#navreturn"]);
 
         var mbCSVStart;
-        // the CSV file has the header row shunted, hence [0-23] are regular Qs; [24] space; [25-30] MBs; [31] space
+        // the CSV file has the header row shunted and blanks removed
+        // hence [0-23] are regular Qs; [24-29] MBs; [30] spare
         if (loc.currentTopic == 'ma')
-            mbCSVStart = 25; // 26 27 28 (1-based) 
+            mbCSVStart = 24; // L25-26-27 (1-based) 
         else
-            mbCSVStart = 28; // 29 30 31 (1-based)
+            mbCSVStart = 27; // L28-29-30 (1-based)
 
         topicString = question_data[mbCSVStart][0];
         $('#cq0-paneltitle').html(topicString);
@@ -350,9 +351,9 @@ function setupGUI() {
 
     else if (loc.currentTopic == 'spare' ) { // spare mode
         hideGUIexcept(['#question_gui', "#navreturn"]);
-        var spareCSVStart = 32;
-        // the CSV file has the header row shunted, hence [0-23] are regular Qs; [24] space; [25-30] MBs; [31] space
-
+        var spareCSVStart = 30;
+        // the CSV file has the header row shunted and blanks removed
+        // hence [0-23] are regular Qs; [24-29] MBs; [30] spare
         topicString = question_data[spareCSVStart][0];
         $('#cq0-paneltitle').html(topicString);
 
@@ -369,8 +370,17 @@ function setupGUI() {
 function loadCSV(results){
     question_data = results.data;
     if ( question_data[0][0].toLowerCase() == "category" || question_data[0][0].toLowerCase() == "topic" ) {
-        question_data.shift()
+        question_data.shift(); //  pop the header row (if 3 column format)
     } 
+    else if ( question_data[0][0].toLowerCase() == "packet" ) {
+        // we need to 'remove column 0'
+        // credits: https://stackoverflow.com/questions/24812371/deleting-a-column-from-a-multidimensional-array-in-javascript
+        var question_data = question_data.map(
+            function(subarray) {
+                return subarray.slice(1);
+            });
+        question_data.shift(); //  pop the header row as usual
+    }
     
     alert("CSV loaded successfully.");
     sessionStorage.setItem('question_data', JSON.stringify(question_data));
@@ -424,6 +434,7 @@ $('#submit-file').on("click",function(e){
             delimiter: "",
             newline: "",
             complete: loadCSV,
+            skipEmptyLines: true,
         },
         before: function(file, inputElem) {},
         error: function(err, file) {alert('The quiz data file is not complete or has errors!')},
