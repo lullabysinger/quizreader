@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- CSS for Bootstrap and FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+
+    <title>QuizReader beta20220610</title>
+</head>
+
+<!-- JS for Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<!-- JS for Utilities - CSV PapaParse, URI (for suffixes), EasyTimer  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://medialize.github.io/URI.js/src/URI.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/easytimer@1.1.3/src/easytimer.min.js"></script>
+
+<body>
+<!--------------------------------------------------------------------------------------------->
+<header><nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">QuizReader <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup></span>
+        <ul class="navbar-nav flex-row" >
+            <!---
+            <li class="nav-item">
+                <a class="nav-link p-2" href="#" aria-label="Return" id="scoreline">Attempt for: </a>
+            </li>
+            --->
+            <li class="nav-item">
+                <span class="nav-link p-2" href="#" aria-label="scoreline" id="scoreline">Home x -- y Away </span>
+            </li>
+        
+            <li class="nav-item">
+                <a class="nav-link" href="#" aria-label="Return" id="navreturn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Return to Topics</a>
+            </li>
+        </ul>
+    </div>
+</nav></header>
+<!--------------------------------------------------------------------------------------------->
+
+<main>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+
+<!-- LOADER GUI ------------------------------------------------------------------------------------------->
+<div class="col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" id="loader_gui">
+    <div class="card" style="">
+        <div class="card-body">
+            <h5 class="card-header">Game Setup</h5>
+            <p class="card-text">First, we need to know which teams are playing</p>
+            <form>
+              <div class="row">
+                <div class="col-auto">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text"><i class="fa-solid fa-house-chimney-user"></i></div>
+                        </div>
+                        <input type="text" class="form-control mb-2" placeholder="Home team" id="home_name" size="9" maxlength="6">
+                    </div>
+                </div>
+                <div class="col-auto">versus</div>
+                <div class="col-auto">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text"><i class="fa-solid fa-road"></i></div>
+                        </div>
+                        <input type="text" class="form-control mb-2" placeholder="Away team" id="away_name" size="9" maxlength="6">
+                        </div>                 
+                </div>
+              </div>
+            </form>
+        </div>
+    </div>
+    <div class="card" style="">
+        <div class="card-body">
+            <h5 class="card-header">Question Data</h5>
+            <p class="card-text">To begin, we need to upload a CSV formatted file with the questions/answers.</p>
+            <form>
+                <div class="mb-3">
+                    <label for="files">Select a CSV file here: </label>
+                    <input type="file" id="files"  class="form-control-file" accept=".csv" required readonly />
+                </div>
+                <div class="mb-3">
+                    <button type="submit" id="submit-file" class="btn btn-primary"><i class="fa-solid fa-circle-play"></i> Upload file and start game!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> <!-- END LOADER GUI -->
+
+
+<!--TOPICS GUI------------------------------------------------------------------------------------------->
+<div class="col bd-content" id="topics_gui">
+    <div class="row"> 
+        <h5>Select a topic:</h5> 
+    </div>
+
+    <div class="row">
+        <div class="col"> <!-- column 1 buttons -->
+            <div class="card" style="">
+                <div class="card-header">
+                    <i class="fa-solid fa-circle-question"></i> Individual and Team Rounds
+                </div>
+                <div class="btn-group-vertical" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-dark" id="t1">... </button>
+                    <button type="button" class="btn btn-dark" id="t2">... </button>
+                    <button type="button" class="btn btn-dark" id="t3">... </button>
+                    <button type="button" class="btn btn-dark" id="t4">... </button>
+                    <button type="button" class="btn btn-dark" id="t5">... </button>
+                    <button type="button" class="btn btn-dark" id="t6">... </button>
+                    <button type="button" class="btn btn-dark" id="t7">... </button>
+                    <button type="button" class="btn btn-dark" id="t8">... </button>
+                    <button type="button" class="btn btn-dark" id="t9">... </button>
+                    <button type="button" class="btn btn-dark" id="t10">... </button>
+                    <button type="button" class="btn btn-dark" id="t11">... </button>
+                    <button type="button" class="btn btn-dark" id="t12">... </button>
+                </div>
+            </div>
+        </div> <!-- end column 1 buttons -->
+
+        <div class="col"> <!-- column 2 buttons -->
+            <div class="card" style="width: 18rem;" id="">
+                <div class="card-header">
+                    <i class="fa-solid fa-box"></i> Mystery Boxes!
+                </div>
+                <div class="btn-group-vertical" role="group" aria-label="Mystery boxes">
+                    <button type="button" class="btn btn-info" id="ma">Mystery Box A</button>
+                    <button type="button" class="btn btn-info" id="mb">Mystery Box B</button>
+                </div>
+            </div>
+
+            <div class="card" style="width: 18rem;" id="">
+                <div class="card-header">
+                    <i class="fa-solid fa-circle-plus"></i> Spares
+                </div>
+                <div class="btn-group-vertical" role="group" aria-label="Spares">
+                    <button type="button" class="btn btn-warning" id="spare">Spares</button>
+                </div>
+            </div>    
+        </div> <!-- end column 2 buttons -->
+    </div>
+</div> <!-- END TOPICS GUI -->
+
+<!-- QUESTION GUI ------------------------------------------------------------------------------------------->
+<div class="col bd-content" id="question_gui">
+    <div class="row">
+        <div class="col"> <!-- column 1 content -->
+            <!-- tab menu -->
+            <ul class="nav nav-tabs" id="cqtabmenu" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="cq0-tab-button" data-bs-toggle="tab" data-bs-target="#cq0-tab" type="button" role="tab" aria-controls="cq0-tab" aria-selected="true">Get ready...</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cq1-tab-button" data-bs-toggle="tab" data-bs-target="#cq1-tab" type="button" role="tab" aria-controls="cq1-tab" aria-selected="false">Question 1</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cq2-tab-button" data-bs-toggle="tab" data-bs-target="#cq2-tab" type="button" role="tab" aria-controls="cq2-tab" aria-selected="false">Question 2</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="mb-tab-button" data-bs-toggle="tab" data-bs-target="#mb-tab" type="button" role="tab" aria-controls="mb-tab" aria-selected="false">Question 3</button>
+                </li>
+            </ul>
+            
+            <!-- tab sheets/tab content -->
+            <div class="tab-content" id="cqtabcontent">
+                <div class="tab-pane active" id="cq0-tab" role="tabpanel" aria-labelledby="cq0-tab">
+                    <div class="h-100 p-5 bg-light border rounded-3">
+                        <h4 class="display-7 text-center" id="cq0-paneltitle">Topic X</h4>
+                        <h4 class="display-7 text-center" id="cq0-panelinstructions">Select Question 1 to start the topic.</h4>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="cq1-tab" role="tabpanel" aria-labelledby="cq1-tab">
+                    <div class="h-100 p-5 bg-light border rounded-3">
+                        <h4 class="display-7 text-center" id="cq1-paneltitle">Topic X Q 1</h4>
+                        <h3 class=" text-center" id="cq1-panelquestion">Question 1 text.</h3>
+                        <hr class="my-4">
+                        <p class=" text-center"><b>Answer:</b>
+                        <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#cq1-panelanswerbox" aria-expanded="false" aria-controls="cq1-panelanswerbox" id="cq1-toggle">Reveal Q1 Answer</button></p>
+                        <div class="collapse" id="cq1-panelanswerbox">
+                            <div class="card card-body" id='cq1-panelanswer'>Answer 1 text.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="cq2-tab" role="tabpanel" aria-labelledby="cq2-tab">
+                    <div class="h-100 p-5 bg-light border rounded-3">
+                        <h4 class="display-7 text-center" id="cq2-paneltitle">Topic X Q 2</h4>
+                        <h3 class="text-center" id="cq2-panelquestion">Question 2 text.</h3>
+                        <hr class="my-4">  
+                        <p class="text-center"><b>Answer:</b>
+                        <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#cq2-panelanswerbox" aria-expanded="false" aria-controls="cq2-panelanswerbox" id="cq2-toggle">Reveal Q2 Answer</button></p>
+                        <div class="collapse" id="cq2-panelanswerbox">
+                            <div class="card card-body" id='cq2-panelanswer'>Answer 2 text.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="mb-tab" role="tabpanel" aria-labelledby="mb-tab">
+                    <div class="h-100 p-5 bg-light border rounded-3">
+                        <h4 class="display-7 text-center" id="mb-paneltitle">Mystery Box X Q 3</h4>
+                        <h3 class=" text-center" id="mb-panelquestion">Question 3 text.</h3>
+                        <hr class="my-4">
+                        <p class=" text-center"><b>Answer:</b>
+                        <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#mb-panelanswerbox" aria-expanded="false" aria-controls="mb-panelanswerbox">Reveal Q3 Answer</button></p>
+                        <div class="collapse" id="mb-panelanswerbox">
+                            <div class="card card-body" id='mb-panelanswer'>Answer 3 text.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end column 1 content -->
+
+        <div class="col-3"> <!-- column 2 content -->
+            <div class="card" id="cq-timercontent">
+                <div class="card-header text-center">Timer (resets after every question)</div>
+                <div class="card-body text-center ">
+                    <h2 class="card-title display-7" id="cq-timer">--:--</h2>
+                    <div class="btn-group-vertical">
+                        <button type="button" class="btn btn-block btn-primary" id="cq-timer20"><i class="fa-solid fa-person"></i> 20 sec <br/>(individual) </button>
+                        <button type="button" class="btn btn-block btn-info" id="cq-timer30"><i class="fa-solid fa-people-group"></i> 30 sec <br/>(teams) </button>
+                        <button type="button" class="btn btn-block btn-secondary" id="cq-timerreset"><i class="fa-solid fa-stop"></i> Reset <br/>all timers</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end column 2 content -->
+    </div>
+</div> <!-- END QUESTION GUI -->
+
+</main>
+</body>
+
+
+<!--JS BEGINS HERE ------------------------------------------------------------------------------------------->
+<script>
+
+// GLOBALS
+var timer;
+var question_data;
+
+
+// GUI SETUP
+function hideGUIexcept(objs) {
+    // gui 'panes' (divs)
+    $('#loader_gui').hide();
+    $('#topics_gui').hide();
+    $('#question_gui').hide();
+
+    // nav return only for cqs or MBs
+    $('#navreturn').hide();
+
+    // cq2 tab button only for cqs and MBs (not for spares)
+    // controlled by the cq1 toggle (reveal link)
+    $('#cq2-tab-button').hide();
+
+    // mb tab button only for MBs (not for spares nor cq2s)
+    // controlled by the cq2 toggle (reveal link)
+    $('#mb-tab-button').hide();
+
+    // initial timer hide (will be brought back with the q tabs)
+    $('#cq-timercontent').hide();
+
+    for (i in objs) {
+        $(objs[i]).show();
+    }
+}
+
+function setupGUI() {
+    var loc = URI(window.location).query(true);
+
+    if (!loc.ready || !sessionStorage.question_data) {
+        hideGUIexcept(['#loader_gui']);
+        return;
+    }
+
+    question_data = JSON.parse(sessionStorage.question_data);
+    home_name = (sessionStorage.home_name);
+    away_name = (sessionStorage.away_name);
+    $('#scoreline').html('<i class="fa-solid  fa-house-chimney-user "></i> ' + home_name + ' vs ' + away_name + ' <i class="fa-solid fa-road"></i> &nbsp;&nbsp;' );
+
+    if (!loc.currentTopic) { // menu mode
+        hideGUIexcept(['#topics_gui']);
+        
+        for(topicID=1; topicID <= 12; topicID++) {
+            var topicArray = (question_data[(topicID-1)*2]);
+            var topicString = topicArray[0];
+            var newLabel = '<b>(' + topicID + ')</b> '+ topicString;
+            $('#t'+topicID).html(newLabel);
+        }
+    }
+
+    else if (loc.currentTopic.includes('t')) { // question mode, topics
+        hideGUIexcept(['#question_gui', "#navreturn"]);
+
+        var c = Number(loc.currentTopic.replace('t',''));
+
+        topicString = question_data[(c-1)*2][0];
+        $('#cq0-paneltitle').html(topicString);
+
+        qString   = question_data[(c-1)*2][1];
+        aString   = question_data[(c-1)*2][2];        
+        $('#cq1-paneltitle').html(topicString + " - Question 1");
+        $('#cq1-panelquestion').html(qString);
+        $('#cq1-panelanswer').html(aString);
+
+        qString   = question_data[(c-1)*2 + 1][1];
+        aString   = question_data[(c-1)*2 + 1][2];
+        $('#cq2-paneltitle').html(topicString + " - Question 2");
+        $('#cq2-panelquestion').html(qString);
+        $('#cq2-panelanswer').html(aString);
+    }
+
+    else if (loc.currentTopic == 'ma' || loc.currentTopic == 'mb' ) { // mysterybox mode
+        hideGUIexcept(['#question_gui', "#navreturn"]);
+
+        var mbCSVStart;
+        // the CSV file has the header row shunted, hence [0-23] are regular Qs; [24] space; [25-30] MBs; [31] space
+        if (loc.currentTopic == 'ma')
+            mbCSVStart = 25; // 26 27 28 (1-based) 
+        else
+            mbCSVStart = 28; // 29 30 31 (1-based)
+
+        topicString = question_data[mbCSVStart][0];
+        $('#cq0-paneltitle').html(topicString);
+
+        qString   = question_data[mbCSVStart][1];
+        aString   = question_data[mbCSVStart][2];        
+        $('#cq1-paneltitle').html(topicString + " - Question 1");
+        $('#cq1-panelquestion').html(qString);
+        $('#cq1-panelanswer').html(aString);
+
+        qString   = question_data[mbCSVStart + 1][1];
+        aString   = question_data[mbCSVStart + 1][2];
+        $('#cq2-paneltitle').html(topicString + " - Question 2");
+        $('#cq2-panelquestion').html(qString);
+        $('#cq2-panelanswer').html(aString);
+
+        qString   = question_data[mbCSVStart + 2][1];
+        aString   = question_data[mbCSVStart + 2][2];
+        $('#mb-paneltitle').html(topicString + " - Question 3");
+        $('#mb-panelquestion').html(qString);
+        $('#mb-panelanswer').html(aString);
+    }
+
+    else if (loc.currentTopic == 'spare' ) { // spare mode
+        hideGUIexcept(['#question_gui', "#navreturn"]);
+        var spareCSVStart = 32;
+        // the CSV file has the header row shunted, hence [0-23] are regular Qs; [24] space; [25-30] MBs; [31] space
+
+        topicString = question_data[spareCSVStart][0];
+        $('#cq0-paneltitle').html(topicString);
+
+        qString   = question_data[spareCSVStart][1];
+        aString   = question_data[spareCSVStart][2];        
+        $('#cq1-paneltitle').html(topicString + " - SPARE");
+        $('#cq1-panelquestion').html(qString);
+        $('#cq1-panelanswer').html(aString);
+    }
+}
+
+
+// CORE LOGIC, STATE CHANGES, AND DATA
+function loadCSV(results){
+    question_data = results.data;
+    if ( question_data[0][0].toLowerCase() == "category" || question_data[0][0].toLowerCase() == "topic" ) {
+        question_data.shift()
+    } 
+    
+    alert("CSV loaded successfully.");
+    sessionStorage.setItem('question_data', JSON.stringify(question_data));
+
+    var home_name, away_name;
+    if ( !$('#home_name').val() || $('#home_name').val().length == 0) 
+        home_name = "[Home]";
+    else
+        home_name = $('#home_name').val();
+    sessionStorage.setItem('home_name', home_name);
+
+    if ( !$('#away_name').val() || $('#away_name').val().length == 0) 
+        away_name = "[Away]";
+    else 
+        away_name = $('#away_name').val();
+    sessionStorage.setItem('away_name', away_name);
+    
+    var loc = URI(window.location).search({ ready: "true" });
+    window.location = loc;
+}
+
+function topicSelect(topicID) {
+    var loc = URI(window.location).search({ ready: "true", currentTopic: topicID });
+    window.location = loc;
+}
+
+
+
+// CALLBACKS
+
+// UNIVERSAL: PAGE RELOAD CALLBACK
+window.onload = function() {
+    setupGUI();
+}
+
+// UNIVERSAL: EMERGENCY RESET CALLBACK
+$('#emergency-reset-button').on("click", function(e) { 
+    let confirm = prompt("This function is used in case of emergency, to completely reset the game!\n" +
+        "If you're absolutely sure, type in the word: reset", "Press Cancel or ESC if this was a mistake!");
+    if (confirm.toLowerCase() == 'reset') {
+        var loc = URI(window.location).search({});
+        window.location = loc;
+    }
+});
+
+// LOADER GUI CALLBACK
+$('#submit-file').on("click",function(e){
+    e.preventDefault();
+    $('#files').parse({
+        config: { 
+            delimiter: "",
+            newline: "",
+            complete: loadCSV,
+        },
+        before: function(file, inputElem) {},
+        error: function(err, file) {alert('The quiz data file is not complete or has errors!')},
+        complete: function() {}
+    });
+});
+
+// TOPICS GUI CALLBACK
+$('#t1').on("click", function(e)    { topicSelect('t1');  });
+$('#t2').on("click", function(e)    { topicSelect('t2');  });
+$('#t3').on("click", function(e)    { topicSelect('t3');  });
+$('#t4').on("click", function(e)    { topicSelect('t4');  });
+$('#t5').on("click", function(e)    { topicSelect('t5');  });
+$('#t6').on("click", function(e)    { topicSelect('t6');  });
+$('#t7').on("click", function(e)    { topicSelect('t7');  });
+$('#t8').on("click", function(e)    { topicSelect('t8');  });
+$('#t9').on("click", function(e)    { topicSelect('t9');  });
+$('#t10').on("click", function(e)   { topicSelect('t10'); });
+$('#t11').on("click", function(e)   { topicSelect('t11'); });
+$('#t12').on("click", function(e)   { topicSelect('t12'); });
+$('#ma').on("click", function(e)    { topicSelect('ma');    });
+$('#mb').on("click", function(e)    { topicSelect('mb');    });
+$('#spare').on("click", function(e) { topicSelect('spare'); });
+
+
+// QUESTION GUI CALLBACKS
+$('#navreturn').on("click", function(e) {
+    var loc = URI(window.location).search({ ready: "true" });
+    window.location = loc;
+});
+$('#cq1-toggle').on("click", function(e) { 
+    var loc = URI(window.location).query(true);
+    // if cq1 (regular round) and ma/mb (mystery boxes), enable 2nd tab
+    if (loc.currentTopic.includes('t') || loc.currentTopic.includes('m')) // cq mode, topics
+        $('#cq2-tab-button').show();
+});
+$('#cq2-toggle').on("click", function(e) { 
+    var loc = URI(window.location).query(true);
+    // if ma/mb (mystery boxes), enable 3rd tab
+    if (loc.currentTopic.includes('m')) // cq mode, topics
+        $('#mb-tab-button').show();
+});
+
+// QUESTION GUI -> TIMER CALLBACKS
+function timerCallbacks(sec, object) {
+    timer = new Timer();
+    timer.start({countdown: true, startValues: {seconds: sec}});
+    $(object+'-timer').html(timer.getTimeValues().toString());  
+    timer.addEventListener('secondsUpdated', function (e) {
+        $(object+'-timer').html(timer.getTimeValues().toString());
+    });
+}
+
+function timerReset() {
+    $('#cq-timercontent').show();
+    if (timer) { 
+        timer.stop(); 
+        $('#cq-timer').html('--:--'); 
+    }
+}
+$('#cq-timer20').on("click", function(e)    { timerCallbacks(20, '#cq');  });
+$('#cq-timer30').on("click", function(e)    { timerCallbacks(30, '#cq');  });
+$('#cq-timerreset').on("click", function(e) { timerReset(); });
+$('#cq0-tab-button').on("click", function(e){ timerReset(); $('#cq-timercontent').hide(); /* only tab 0 */ });
+$('#cq1-tab-button').on("click", function(e){ timerReset(); });
+$('#cq2-tab-button').on("click", function(e){ timerReset(); });
+$('#mb-tab-button').on("click", function(e) { timerReset(); });
+
+
+</script>
+</html>
