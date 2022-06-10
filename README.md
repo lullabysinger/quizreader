@@ -1,2 +1,31 @@
 # quizreader
 HTML interface for QN-style CSV formats
+
+
+## Usage instructions - beta20220610
+1. download a copy of quizreader.html
+2. Open it in a modern browser (tested on FF101)
+3. Type in the two team names, then select a correctly-formatted CSV file that looks like the following
+```
+Topic, Question, Answer
+Topic0, Q1, A1
+Topic0, Q2, A2
+...
+Topic11, Q1, A1
+Topic11, Q2, A2
+<blank>
+MysteryA, Q1, A1
+MysteryB, Q2, A3
+MysteryC, Q3, A3
+<blank>
+Spare, Q, A
+```
+4. Enjoy!
+  
+## Tech credits and tech stack used
+* bootstrap 5.0.2
+* font-awesome 6.1.1
+* jquery 3.2.1
+* PapaParse 5.3.2
+* https://medialize.github.io/URI.js
+* easytimer 1.1.3
