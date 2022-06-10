@@ -17,18 +17,21 @@ Not even cookies are used!
 3. Type in the two team names, then select a correctly-formatted CSV file that looks like the following
 ```
 Topic, Question, Answer
-Topic0, Q1, A1
-Topic0, Q2, A2
+Topic1, Q1, A1
+Topic1, Q2, A2
 ...
-Topic11, Q1, A1
-Topic11, Q2, A2
-<blank>
+Topic12, Q1, A1
+Topic12, Q2, A2
 MysteryA, Q1, A1
-MysteryB, Q2, A3
-MysteryC, Q3, A3
-<blank>
-Spare, Q, A
+MysteryA, Q2, A2
+MysteryA, Q3, A3
+MysteryB, Q1, A1
+MysteryB, Q2, A2
+MysteryB, Q3, A3
+Spares, Q, A
 ```
+The loader will be able to handle extraneous blank rows, or if a "packet" column is the leftmost column.
+
 4. Enjoy!
   
 ## Tech credits and tech stack used
