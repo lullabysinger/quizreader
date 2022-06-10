@@ -383,6 +383,11 @@ function setupGUI() {
     // ... and so is last score
     let last_update = loc.last_update ? loc.last_update : "";
 
+    let historyArray = Array(15);
+    if (loc.history) {
+        historyArray = loc.history.split("");
+    }
+    
     // TOPICS GUI /////////////////////////////////////////////////////////////
     if (!loc.currentTopic) { 
         hideGUIexcept(['#topics_gui', '#scoreline']);
@@ -391,9 +396,23 @@ function setupGUI() {
         for(topicID=1; topicID <= 12; topicID++) {
             let topicArray = (question_data[(topicID-1)*2]);
             let topicString = topicArray[0];
-            let newLabel = '<b>(' + topicID + ')</b> '+ topicString;
+
+            let topicPrefix = (historyArray[topicID-1] == 1) ? '<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double">' : "";
+            let topicSuffix = (historyArray[topicID-1] == 1) ? '</del>' : "";
+
+            let newLabel = topicPrefix + '<b>' + '(' + topicID + ')</b> '+ topicString + topicSuffix;
             $('#t'+topicID).html(newLabel);
         }
+
+        // history functionality merged
+        if (historyArray[12] == 1)
+            $('#ma').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Mystery Box A </del>');
+
+        if (historyArray[13] == 1)
+            $('#mb').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Mystery Box B </del>');
+
+        if (historyArray[14] == 1)
+            $('#spare').html('<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double"> Spares </del>');
 
         // score update panel ONLY if there is a last_update
         let last_update_array = last_update.split('-');
@@ -412,9 +431,9 @@ function setupGUI() {
             $('#stats-last-play').html(topicString);
 
             let lastplayString = '<i class="fa-solid fa-house-chimney-user"></i> ' + home_name + 
-                                ': ' + last_update_array[1] + '<br/>' + 
+                                ': +' + last_update_array[1] + '<br/>' + 
                                 '<i class="fa-solid fa-solid fa-road"></i> ' + away_name + 
-                                ': ' + last_update_array[2];
+                                ': +' + last_update_array[2];
             $('#stats-last-score').html(lastplayString);
         }
 
@@ -545,11 +564,37 @@ function loadCSV(results){
 
 function topicSelect(topicID) {
     let loc = URI(window.location).query(true);
+    let newHistoryString = trackHistory(topicID, loc.history);
+
     let home_score = Number(loc.home_score)
     let away_score = Number(loc.away_score)
 
-    loc = URI(window.location).search({ ready: "true", home_score: home_score, away_score: away_score, currentTopic: topicID });
+    loc = URI(window.location).search({ ready: "true", home_score: home_score, away_score: away_score, currentTopic: topicID, history: newHistoryString });
     window.location = loc;
+}
+
+function trackHistory(topicID, historyString) {
+    if (!historyString || historyString.length < 15) {
+        historyString = '000000000000000';
+    }
+
+    let historyArray = historyString.split("");
+    if (topicID.includes("t")) {
+        let topicElem = Number(topicID.replace("t",""));
+        topicElem -= 1; // zero based array
+        historyArray[topicElem] = 1;
+    }
+    else if (topicID == 'ma') {
+        historyArray[12] = 1;
+    }
+    else if (topicID == 'mb') {
+        historyArray[13] = 1;
+    }
+    else if (topicID == 'spare') {
+        historyArray[14] = 1;
+    }
+
+    return historyArray.join("");
 }
 
 function resetScoreDeltas() {
@@ -656,7 +701,9 @@ $('#navreturn').on("click", function(e) {
     let last_update = loc.currentTopic + '-' + 
                     String(current_round_home_delta) + '-' + String(current_round_away_delta);
 
-    loc = URI(window.location).search({ ready: "true", home_score: home_score, away_score: away_score, last_update: last_update});
+    let historyString = loc.history;
+
+    loc = URI(window.location).search({ ready: "true", home_score: home_score, away_score: away_score, last_update: last_update, history: historyString });
     window.location = loc;
 });
 
