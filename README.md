@@ -1,8 +1,17 @@
 # quizreader
 HTML interface for QN-style CSV formats
 
+The most up-to-date tested version is here: https://lullabysinger.github.io/quizreader/quizreader.html
+
+Note: quizreader can be used offline on your local machine, and it runs **completely client-side with no server code**.
+The code is open -- simply 'View Page Source' to see how it works.
+The only two things it uses to keep state are: query strings (the `?ready=true` etc in your browser URL bar); and Session Storage (https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) which is stored temporarily on your local machine.
+
+Not even cookies are used!
+
 
 ## Usage instructions - beta20220610
+
 1. download a copy of quizreader.html
 2. Open it in a modern browser (tested on FF101)
 3. Type in the two team names, then select a correctly-formatted CSV file that looks like the following
