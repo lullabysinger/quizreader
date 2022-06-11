@@ -641,6 +641,7 @@ $('#manual-override-button').on("click", function(e) {
 });
 
 // LOADER GUI CALLBACK
+// 'greedy' removes blank lines post-parsing!
 $('#submit-file').on("click",function(e){
     e.preventDefault();
     $('#files').parse({
@@ -648,7 +649,7 @@ $('#submit-file').on("click",function(e){
             delimiter: "",
             newline: "",
             complete: loadCSV,
-            skipEmptyLines: true,
+            skipEmptyLines: 'greedy',
         },
         before: function(file, inputElem) {},
         error: function(err, file) {alert('The quiz data file is not complete or has errors!')},
