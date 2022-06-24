@@ -6,16 +6,17 @@ The most up-to-date tested version is here: https://lullabysinger.github.io/quiz
 Note: quizreader can be used offline on your local machine, and it runs **completely client-side with no server code**.
 The code is open -- simply 'View Page Source' to see how it works.
 
-The only two things it uses to keep state are: 
+The only two (three?) things it uses to keep state are: 
 * query strings (the `?ready=true` etc in your browser URL bar) - allows for 'semi' Back-button navigation; 
 * and Session Storage (https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) which is stored temporarily on your local machine.
+* and the Clipboard for saving state of the game (i.e. what topics have been picked = the boolean in the `?history=` part of the query string, as an emergency backup measure).
 
 Not even cookies are used!
 
 
-## Usage instructions - beta20220610
+## Usage instructions - beta20220624
 
-1. download a copy of quizreader.html
+1. download a copy of quizreader.html or just use the live version above.
 2. Open it in a modern browser (tested on FF101)
 3. Type in the two team names, then select a correctly-formatted CSV file that looks like the following
 ```
@@ -34,6 +35,7 @@ MysteryB, Q3, A3
 Spares, Q, A
 ```
 The loader will be able to handle extraneous blank rows, or if a "packet" column is the leftmost column.
+The loader will also (as of 20220624) automatically sort Topics in order. (but not the Mystery? and Spares)
 
 4. Enjoy!
   
