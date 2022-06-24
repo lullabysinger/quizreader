@@ -409,10 +409,11 @@ function loadCSV(results){
 
     // allows for non-punctuation locale compare, includes e.g. á é etc.
     twelve_topics.sort(function(a,b) { 
-    	if (a[0].localeCompare(b[0], {ignorePunctuation: true}) == 0)
-    		return a[1].localeCompare(b[1], {ignorePunctuation: true});
-    	else
-    		return a[0].localeCompare(b[0], {ignorePunctuation: true});
+    	//if (a[0].localeCompare(b[0], {ignorePunctuation: true}) == 0)
+    	//	return a[1].localeCompare(b[1], {ignorePunctuation: true});
+    	// NB: As of 2019, sort is inherently stable!
+    	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+    	return a[0].localeCompare(b[0], {ignorePunctuation: true});
     });
 
     // re-merge
