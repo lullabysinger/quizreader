@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
 
-    <title>QuizReader beta20220610</title>
+    <title>QuizReader beta20220624</title>
 </head>
 
 <!-- JS for Bootstrap -->
@@ -25,7 +25,8 @@
 <!--------------------------------------------------------------------------------------------->
 <header><nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
-        <span class="navbar-brand">QuizReader <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup></span>
+        <span class="navbar-brand">QuizReader <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
+        <sup class="fa-solid fa-screwdriver-wrench" id="gamestate-recovery"></sup></span>
         <ul class="navbar-nav flex-row" >
             <!---
             <li class="nav-item">
@@ -59,18 +60,18 @@
                 <div class="col-auto">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text"><i class="fa-solid fa-house-chimney-user"></i></div>
+                            <div class="input-group-text"><i class="fa-solid fa-dice-one"></i></div>
                         </div>
-                        <input type="text" class="form-control mb-2" placeholder="Home team" id="home_name" size="9" maxlength="6">
+                        <input type="text" class="form-control mb-2" placeholder="Batting 1st" id="home_name" size="9" maxlength="6">
                     </div>
                 </div>
                 <div class="col-auto">versus</div>
                 <div class="col-auto">
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <div class="input-group-text"><i class="fa-solid fa-road"></i></div>
+                            <div class="input-group-text"><i class="fa-solid fa-dice-two"></i></div>
                         </div>
-                        <input type="text" class="form-control mb-2" placeholder="Away team" id="away_name" size="9" maxlength="6">
+                        <input type="text" class="form-control mb-2" placeholder="Batting 2nd" id="away_name" size="9" maxlength="6">
                         </div>                 
                 </div>
               </div>
@@ -286,7 +287,7 @@ function setupGUI() {
         historyArray = loc.history.split("");
     }
 
-    $('#scoreline').html('<i class="fa-solid  fa-house-chimney-user "></i> ' + home_name + ' vs ' + away_name + ' <i class="fa-solid fa-road"></i> &nbsp;&nbsp;' );
+    $('#scoreline').html('<i class="fa-solid  fa-dice-one "></i> ' + home_name + ' vs ' + away_name + ' <i class="fa-solid fa-dice-two"></i> &nbsp;&nbsp;' );
 
     if (!loc.currentTopic) { // menu mode
         hideGUIexcept(['#topics_gui']);
@@ -405,13 +406,13 @@ function loadCSV(results){
 
     var home_name, away_name;
     if ( !$('#home_name').val() || $('#home_name').val().length == 0) 
-        home_name = "[Home]";
+        home_name = "[Batting 1st]";
     else
         home_name = $('#home_name').val();
     sessionStorage.setItem('home_name', home_name);
 
     if ( !$('#away_name').val() || $('#away_name').val().length == 0) 
-        away_name = "[Away]";
+        away_name = "[Batting 2nd]";
     else 
         away_name = $('#away_name').val();
     sessionStorage.setItem('away_name', away_name);
@@ -424,6 +425,7 @@ function topicSelect(topicID) {
     let loc = URI(window.location).query(true);
     let newHistoryString = trackHistory(topicID, loc.history);
     loc = URI(window.location).search({ ready: "true", currentTopic: topicID, history: newHistoryString });
+    navigator.clipboard.writeText(newHistoryString);
     window.location = loc;
 }
 
@@ -468,6 +470,15 @@ $('#emergency-reset-button').on("click", function(e) {
     }
 });
 
+// UNIVERSAL: EMERGENCY RESET CALLBACK
+$('#gamestate-recovery').on("click", function(e) { 
+    let confirm = prompt("This function is used in case of emergency, to fix the game state.\n" +
+        "If you're absolutely sure, paste the game state from the clipboard here (CTRL+V or CMD+V).", "Press Cancel or ESC if this was a mistake!");
+    if (confirm.length == 15) {
+        var loc = URI(window.location).search({ ready: "true", history: confirm });
+        window.location = loc;
+    }
+});
 // LOADER GUI CALLBACK
 // 'greedy' removes blank lines post-parsing!
 $('#submit-file').on("click",function(e){
