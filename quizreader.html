@@ -401,6 +401,24 @@ function loadCSV(results){
         question_data.shift(); //  pop the header row as usual
     }
     
+    // added sort functonality - CK 20220624
+    // use console.log(JSON.stringify(question_data)); to debug
+
+    twelve_topics = question_data.slice(0, 24); // 00-23 inclusive to be sorted
+    mbs_spares = question_data.slice(24, 31);   // 24-30 inclusive UNsorted
+
+    // allows for non-punctuation locale compare, includes e.g. á é etc.
+    twelve_topics.sort(function(a,b) { 
+    	if (a[0].localeCompare(b[0], {ignorePunctuation: true}) == 0)
+    		return a[1].localeCompare(b[1], {ignorePunctuation: true});
+    	else
+    		return a[0].localeCompare(b[0], {ignorePunctuation: true});
+    });
+
+    // re-merge
+    question_data = twelve_topics.concat(mbs_spares);
+
+
     alert("CSV loaded successfully.");
     sessionStorage.setItem('question_data', JSON.stringify(question_data));
 
