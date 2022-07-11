@@ -53,8 +53,20 @@
 <div class="col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" id="loader_gui">
     <div class="card" style="">
         <div class="card-body">
+            <h5 class="card-header">Question Data</h5>
+            <p class="card-text">First, we need to upload a CSV formatted file with the questions/answers.</p>
+            <form>
+                <div class="mb-3">
+                    <label for="files">Select a CSV file here: </label>
+                    <input type="file" id="files"  class="form-control-file" accept=".csv" required readonly />
+                </div>
+            </form>
+        </div>
+    </div>
+     <div class="card" style="">
+        <div class="card-body">
             <h5 class="card-header">Game Setup</h5>
-            <p class="card-text">First, we need to know which teams are playing</p>
+            <p class="card-text">Before we begin, we need to know which teams are playing</p>
             <form>
               <div class="row">
                 <div class="col-auto">
@@ -75,21 +87,9 @@
                         </div>                 
                 </div>
               </div>
-            </form>
-        </div>
-    </div>
-    <div class="card" style="">
-        <div class="card-body">
-            <h5 class="card-header">Question Data</h5>
-            <p class="card-text">To begin, we need to upload a CSV formatted file with the questions/answers.</p>
-            <form>
-                <div class="mb-3">
-                    <label for="files">Select a CSV file here: </label>
-                    <input type="file" id="files"  class="form-control-file" accept=".csv" required readonly />
-                </div>
-                <div class="mb-3">
-                    <button type="submit" id="submit-file" class="btn btn-primary"><i class="fa-solid fa-circle-play"></i> Upload file and start game!</button>
-                </div>
+              <div class="mb-3">
+                 <button type="submit" id="submit-file" class="btn btn-primary"><i class="fa-solid fa-circle-play"></i> Upload file and start game!</button>
+              </div>
             </form>
         </div>
     </div>
