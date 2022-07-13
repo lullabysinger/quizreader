@@ -40,12 +40,12 @@ The loader will also (as of 20220624) automatically sort Topics in order. (but n
 4. Enjoy!
   
 ## Tech credits and tech stack used
-* bootstrap 5.0.2
-* font-awesome 6.1.1
-* jquery 3.2.1
-* PapaParse 5.3.2
+* bootstrap 5.0.2 [https://github.com/twbs/bootstrap]
+* font-awesome 6.1.1 - free version [https://fontawesome.com/license/free]
+* jquery 3.2.1 [https://github.com/jquery/jquery]
+* PapaParse 5.3.2 [https://github.com/mholt/PapaParse]
 * https://medialize.github.io/URI.js
-* easytimer 1.1.3
+* easytimer 1.1.3 [https://libraries.io/npm/easytimer]
 
 ## Code attributions
 * Sample code have been adapted from the documentations for the above libraries (bootstrap, font-awesome, jquery, PapaParse, URI.js, easytimer)
