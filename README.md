@@ -46,3 +46,7 @@ The loader will also (as of 20220624) automatically sort Topics in order. (but n
 * PapaParse 5.3.2
 * https://medialize.github.io/URI.js
 * easytimer 1.1.3
+
+## Code attributions
+* Sample code have been adapted from the documentations for the above libraries (bootstrap, font-awesome, jquery, PapaParse, URI.js, easytimer)
+* Non-trivial code for 2D array manipulation credited to contributors in: https://stackoverflow.com/questions/24812371/deleting-a-column-from-a-multidimensional-array-in-javascript
