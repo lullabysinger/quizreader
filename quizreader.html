@@ -16,10 +16,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
-<!-- JS for Utilities - CSV PapaParse, URI (for suffixes), EasyTimer  -->
+<!-- JS for Utilities - CSV PapaParse, URI (for suffixes), EasyTimer, DOMPurify -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://medialize.github.io/URI.js/src/URI.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/easytimer@1.1.3/src/easytimer.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
 
 <body>
 <!--------------------------------------------------------------------------------------------->
@@ -290,7 +291,9 @@ function setupGUI() {
     if (loc.history) {
         historyArray = loc.history.split("");
     }
-
+    
+    home_name = DOMPurify.sanitize(home_name); // XSS mitigation patch 20221012
+    away_name = DOMPurify.sanitize(away_name);
     $('#scoreline').html('<i class="fa-solid  fa-dice-one "></i> ' + home_name + ' vs ' + away_name + ' <i class="fa-solid fa-dice-two"></i> &nbsp;&nbsp;' );
 
     if (!loc.currentTopic) { // menu mode
@@ -299,7 +302,8 @@ function setupGUI() {
         for(topicID=1; topicID <= 12; topicID++) {
             let topicArray = (question_data[(topicID-1)*2]);
             let topicString = topicArray[0];
-
+            topicString = DOMPurify.sanitize(topicString);
+            
             let topicPrefix = (historyArray[topicID-1] == 1) ? '<i class="fa-solid fa-square-check"></i> <del style="text-decoration-style: double">' : "";
             let topicSuffix = (historyArray[topicID-1] == 1) ? '</del>' : "";
 
@@ -324,19 +328,19 @@ function setupGUI() {
         var c = Number(loc.currentTopic.replace('t',''));
 
         topicString = question_data[(c-1)*2][0];
-        $('#cq0-paneltitle').html(topicString);
+        $('#cq0-paneltitle').text(topicString); // patch 20221012 to avoid XSS - thanks to David Howse
 
         qString   = question_data[(c-1)*2][1];
         aString   = question_data[(c-1)*2][2];        
-        $('#cq1-paneltitle').html(topicString + " - Question 1");
-        $('#cq1-panelquestion').html(qString);
-        $('#cq1-panelanswer').html(aString);
+        $('#cq1-paneltitle').text(topicString + " - Question 1");
+        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelanswer').text(aString);
 
         qString   = question_data[(c-1)*2 + 1][1];
         aString   = question_data[(c-1)*2 + 1][2];
-        $('#cq2-paneltitle').html(topicString + " - Question 2");
-        $('#cq2-panelquestion').html(qString);
-        $('#cq2-panelanswer').html(aString);
+        $('#cq2-paneltitle').text(topicString + " - Question 2");
+        $('#cq2-panelquestion').text(qString);
+        $('#cq2-panelanswer').text(aString);
     }
 
     else if (loc.currentTopic == 'ma' || loc.currentTopic == 'mb' ) { // mysterybox mode
@@ -351,25 +355,25 @@ function setupGUI() {
             mbCSVStart = 27; // L28-29-30 (1-based)
 
         topicString = question_data[mbCSVStart][0];
-        $('#cq0-paneltitle').html(topicString);
+        $('#cq0-paneltitle').text(topicString);
 
         qString   = question_data[mbCSVStart][1];
         aString   = question_data[mbCSVStart][2];        
-        $('#cq1-paneltitle').html(topicString + " - Question 1");
-        $('#cq1-panelquestion').html(qString);
-        $('#cq1-panelanswer').html(aString);
+        $('#cq1-paneltitle').text(topicString + " - Question 1");
+        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelanswer').text(aString);
 
         qString   = question_data[mbCSVStart + 1][1];
         aString   = question_data[mbCSVStart + 1][2];
-        $('#cq2-paneltitle').html(topicString + " - Question 2");
-        $('#cq2-panelquestion').html(qString);
-        $('#cq2-panelanswer').html(aString);
+        $('#cq2-paneltitle').text(topicString + " - Question 2");
+        $('#cq2-panelquestion').text(qString);
+        $('#cq2-panelanswer').text(aString);
 
         qString   = question_data[mbCSVStart + 2][1];
         aString   = question_data[mbCSVStart + 2][2];
-        $('#mb-paneltitle').html(topicString + " - Question 3");
-        $('#mb-panelquestion').html(qString);
-        $('#mb-panelanswer').html(aString);
+        $('#mb-paneltitle').text(topicString + " - Question 3");
+        $('#mb-panelquestion').text(qString);
+        $('#mb-panelanswer').text(aString);
     }
 
     else if (loc.currentTopic == 'spare' ) { // spare mode
@@ -378,13 +382,13 @@ function setupGUI() {
         // the CSV file has the header row shunted and blanks removed
         // hence [0-23] are regular Qs; [24-29] MBs; [30] spare
         topicString = question_data[spareCSVStart][0];
-        $('#cq0-paneltitle').html(topicString);
+        $('#cq0-paneltitle').text(topicString);
 
         qString   = question_data[spareCSVStart][1];
         aString   = question_data[spareCSVStart][2];        
-        $('#cq1-paneltitle').html(topicString + " - SPARE");
-        $('#cq1-panelquestion').html(qString);
-        $('#cq1-panelanswer').html(aString);
+        $('#cq1-paneltitle').text(topicString + " - SPARE");
+        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelanswer').text(aString);
     }
 }
 
@@ -561,9 +565,9 @@ $('#cq2-toggle').on("click", function(e) {
 function timerCallbacks(sec, object) {
     timer = new Timer();
     timer.start({countdown: true, startValues: {seconds: sec}});
-    $(object+'-timer').html(timer.getTimeValues().toString());  
+    $(object+'-timer').text(timer.getTimeValues().toString());  
     timer.addEventListener('secondsUpdated', function (e) {
-        $(object+'-timer').html(timer.getTimeValues().toString());
+        $(object+'-timer').text(timer.getTimeValues().toString());
     });
 }
 
@@ -571,7 +575,7 @@ function timerReset() {
     $('#cq-timercontent').show();
     if (timer) { 
         timer.stop(); 
-        $('#cq-timer').html('--:--'); 
+        $('#cq-timer').text('--:--'); 
     }
 }
 $('#cq-timer20').on("click", function(e)    { timerCallbacks(20, '#cq');  });
