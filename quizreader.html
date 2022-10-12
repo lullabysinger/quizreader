@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
 
-    <title>QuizReader beta20220711</title>
+    <title>QuizReader beta20221012</title>
 </head>
 
 <!-- JS for Bootstrap -->
@@ -94,7 +94,7 @@
             </form>
             <hr/>
             <div>
-                <p style="font-size: x-small; color: #888888;">Credits (for code and libraries): please refer to the source repo on GitHub at https://github.com/lullabysinger/quizreader -- many thanks to the open-source community who contributed their code!</p>  
+                <p style="font-size: x-small; color: #888888;">Credits (for code and libraries): please refer to the source repo on GitHub at https://github.com/lullabysinger/quizreader -- many thanks to the open-source community who contributed their code, and David Howse, for all their suggestions!</p>  
             </div>
         </div>
     </div>
@@ -250,6 +250,30 @@
 var timer;
 var question_data;
 
+// GLOBALS FOR DOMPURIFY.JS
+// credits: https://github.com/cure53/DOMPurify/tree/main/demos#what-is-this
+var DOMPurifyConfig = {
+  ALLOWED_TAGS: ['#text', 'iframe', 'img'], 
+  KEEP_CONTENT: false, 
+  RETURN_DOM: true,
+  ADD_ATTR: ["width", "height"]
+};
+
+// credits: https://github.com/cure53/DOMPurify/issues/340#issuecomment-670758980 
+// credits: https://dev.to/patarapolw/securely-embed-youtube-and-other-iframe-elements-in-markdown-2hoc
+DOMPurify.addHook("uponSanitizeElement", function (node, data) 
+{
+     if (data.tagName === "iframe")
+     {
+        const src = node.getAttribute("src") || "";
+        alert(src);
+        alert(data);
+        if (!src.startsWith("https://www.youtube.com/embed/"))
+           return node.parentNode.removeChild(node);
+     }
+     alert(node);
+});
+    
 // GUI SETUP
 function hideGUIexcept(objs) {
     // gui 'panes' (divs)
@@ -330,16 +354,18 @@ function setupGUI() {
         topicString = question_data[(c-1)*2][0];
         $('#cq0-paneltitle').text(topicString); // patch 20221012 to avoid XSS - thanks to David Howse
 
-        qString   = question_data[(c-1)*2][1];
+        qString   = question_data[(c-1)*2][1]; 
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);
         aString   = question_data[(c-1)*2][2];        
         $('#cq1-paneltitle').text(topicString + " - Question 1");
-        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelquestion').html(qString); // ONLY AFTER DOMPURIFY(qString)
         $('#cq1-panelanswer').text(aString);
 
         qString   = question_data[(c-1)*2 + 1][1];
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);      
         aString   = question_data[(c-1)*2 + 1][2];
         $('#cq2-paneltitle').text(topicString + " - Question 2");
-        $('#cq2-panelquestion').text(qString);
+        $('#cq2-panelquestion').html(qString);
         $('#cq2-panelanswer').text(aString);
     }
 
@@ -358,21 +384,24 @@ function setupGUI() {
         $('#cq0-paneltitle').text(topicString);
 
         qString   = question_data[mbCSVStart][1];
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);
         aString   = question_data[mbCSVStart][2];        
         $('#cq1-paneltitle').text(topicString + " - Question 1");
-        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelquestion').html(qString);
         $('#cq1-panelanswer').text(aString);
 
         qString   = question_data[mbCSVStart + 1][1];
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);
         aString   = question_data[mbCSVStart + 1][2];
         $('#cq2-paneltitle').text(topicString + " - Question 2");
-        $('#cq2-panelquestion').text(qString);
+        $('#cq2-panelquestion').html(qString);
         $('#cq2-panelanswer').text(aString);
 
         qString   = question_data[mbCSVStart + 2][1];
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);     
         aString   = question_data[mbCSVStart + 2][2];
         $('#mb-paneltitle').text(topicString + " - Question 3");
-        $('#mb-panelquestion').text(qString);
+        $('#mb-panelquestion').html(qString);
         $('#mb-panelanswer').text(aString);
     }
 
@@ -385,9 +414,10 @@ function setupGUI() {
         $('#cq0-paneltitle').text(topicString);
 
         qString   = question_data[spareCSVStart][1];
+        qString   = DOMPurify.sanitize(qString, DOMPurifyConfig);           
         aString   = question_data[spareCSVStart][2];        
         $('#cq1-paneltitle').text(topicString + " - SPARE");
-        $('#cq1-panelquestion').text(qString);
+        $('#cq1-panelquestion').html(qString);
         $('#cq1-panelanswer').text(aString);
     }
 }
