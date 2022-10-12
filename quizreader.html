@@ -255,7 +255,7 @@ var question_data;
 var DOMPurifyConfig = {
   ALLOWED_TAGS: ['#text', 'iframe', 'img'], 
   KEEP_CONTENT: false, 
-  RETURN_DOM: true,
+  //RETURN_DOM: true, // removed due to incorrect <body> text format applied.
   ADD_ATTR: ["width", "height"]
 };
 
