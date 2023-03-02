@@ -50,3 +50,4 @@ The loader will also (as of 20220624) automatically sort Topics in order. (but n
 ## Code attributions
 * Sample code have been adapted from the documentations for the above libraries (bootstrap, font-awesome, jquery, PapaParse, URI.js, easytimer)
 * Non-trivial code for 2D array manipulation credited to contributors in: https://stackoverflow.com/questions/24812371/deleting-a-column-from-a-multidimensional-array-in-javascript
+* (Beta test) Card drawing for captains' draw credited to w3collective from: https://github.com/w3collective/random-playing-card/ (MIT License: https://github.com/w3collective/random-playing-card/blob/main/LICENSE)
