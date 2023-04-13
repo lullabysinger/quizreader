@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
 
-    <title>QuizReader 13Q beta202320129</title>
+    <title>QuizReader 13Q beta20230413</title>
 </head>
 
 <!-- JS for Bootstrap -->
@@ -23,10 +23,49 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
 
 <body>
+<!-- CSS for w3collective/random-playing-card -->
+<style>
+.randomcard {
+  font-family: sans-serif;
+  position: relative;
+  width: 70px;
+  height: 100px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+}
+
+.randomcard.spades, .randomcard.clubs {
+  color: black;
+}
+.randomcard.hearts, .randomcard.diamonds {
+  color: red;
+}
+
+.randomcard-value-suit {
+  display: inline-block; position: absolute;
+}
+.randomcard-value-suit.top {
+  top: 5px; left: 5px;
+}
+.randomcard-value-suit.bot {
+  transform: rotate(180deg); bottom: 5px; right: 5px;
+}
+.randomcard-suit {
+  font-size: 50px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 30%;
+}
+</style>
+<!--------------------------------------------------------------------------------------------->
+    
 <!--------------------------------------------------------------------------------------------->
 <header><nav class="navbar navbar-light bg-warning">
     <div class="container-fluid">
-        <span class="navbar-brand">QuizReader - 13Q TEST VERSION <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
+        <span class="navbar-brand">QuizReader &mdash; 13 Questions [beta20230413] <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
         <sup class="fa-solid fa-screwdriver-wrench" id="gamestate-recovery"></sup></span>
         <ul class="navbar-nav flex-row" >
             <!---
@@ -56,7 +95,7 @@
         <div class="card-body">
             <h5 class="card-header">Step 1: Question Data</h5>
             <p class="card-text">First, we need to upload a CSV formatted file with the questions/answers.<br/>
-            <b>NOTE: This experimental version uses 13 question sets - make sure your CSV has 13 sets of Qs! </br> </p>
+            <b>NOTE: This version uses 13 question sets - make sure your CSV has 13 sets of Qs! </br> </p>
             <form>
                 <div class="mb-3">
                     <label for="files">Select a CSV file here: </label>
@@ -99,6 +138,19 @@
             </div>
         </div>
     </div>
+    <!-- new card functionality -->
+    <div class="card" style="">
+        <div class="card-body">
+            <h5 class="card-header">Random Card Draw</h5>
+            <p class="card-text">Click on the card for a new draw. Captains to call red or black.</p>
+            <div id="randomcard" class="randomcard"><span class="randomcard-suit">?</span></div>
+            <hr/>
+            <div>
+                <p style="font-size: x-small; color: #888888;">Credits (for card widget): w3collective (repo on GitHub at https://github.com/w3collective/random-playing-card/ - under the <a href="https://github.com/w3collective/random-playing-card/blob/main/LICENSE">MIT License</a>).</p>  
+            </div>
+        </div>
+    </div>
+    <!-- end new card functionality -->
 </div> <!-- END LOADER GUI -->
 
 
@@ -616,6 +668,40 @@ $('#cq0-tab-button').on("click", function(e){ timerReset(); $('#cq-timercontent'
 $('#cq1-tab-button').on("click", function(e){ timerReset(); });
 $('#cq2-tab-button').on("click", function(e){ timerReset(); });
 $('#mb-tab-button').on("click", function(e) { timerReset(); });
+
+// JS for w3collective/random-playing-card
+// adapted from https://github.com/w3collective/random-playing-card/
+// licensed: MIT: https://github.com/w3collective/random-playing-card/blob/main/LICENSE
+function deckBuilder() {
+  const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+  const suits = ["Hearts", "Diamonds", "Spades", "Clubs"];
+  const deck = [];
+  for (let s = 0; s < suits.length; s++) {
+    for (let v = 0; v < values.length; v++) {
+      const value = values[v];
+      const suit = suits[s];
+      deck.push({ value, suit });
+    }
+  }
+  return deck;
+}
+
+// adapted from https://github.com/w3collective/random-playing-card/
+// licensed: MIT: https://github.com/w3collective/random-playing-card/blob/main/LICENSE
+function randomCard(deck) {
+  const random = Math.floor(Math.random() * 51);
+  const cardValue = deck[random].value;
+  const cardSuit = deck[random].suit;
+  let entity;
+  cardSuit === "Diamonds"
+    ? (entity = "&diams;")
+    : (entity = "&" + cardSuit.toLowerCase() + ";");  
+  
+  $('#randomcard').removeClass();
+  $('#randomcard').html( '<span class="randomcard-value-suit top">' + cardValue + entity + "</span>" + '<span class="randomcard-suit">' + entity + "</span>" + '<span class="randomcard-value-suit bot">' + cardValue + entity + "</span>");
+  $('#randomcard').addClass("randomcard " + cardSuit.toLowerCase());
+}
+$('#randomcard').on("click", function(e) { randomCard(deckBuilder()); });
 
 
 </script>
