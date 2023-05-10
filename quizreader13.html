@@ -65,7 +65,7 @@
 <!--------------------------------------------------------------------------------------------->
 <header><nav class="navbar navbar-light bg-warning">
     <div class="container-fluid">
-        <span class="navbar-brand">QuizReader &mdash; 13 Questions <sup>[beta20230413]</sup> <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
+        <span class="navbar-brand">QuizReader &mdash; 13 Questions <sup>[beta202305110 encoding=ISO-8859-1]</sup> <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
         <sup class="fa-solid fa-screwdriver-wrench" id="gamestate-recovery"></sup></span>
         <ul class="navbar-nav flex-row" >
             <!---
@@ -595,6 +595,7 @@ $('#submit-file').on("click",function(e){
     e.preventDefault();
     $('#files').parse({
         config: { 
+            encoding: "ISO-8859-1",
             delimiter: "",
             newline: "",
             complete: loadCSV,
