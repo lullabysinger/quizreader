@@ -62,9 +62,9 @@
 }
 </style>
 <!--------------------------------------------------------------------------------------------->
-<header><nav class="navbar navbar-dark bg-dark">
+<header><nav class="navbar navbar-dark bg-info">
     <div class="container-fluid">
-        <span class="navbar-brand">QuizReader <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
+        <span class="navbar-brand">QuizReader [encoding=ISO-8859-1] <sup class="fa-solid fa-power-off" id="emergency-reset-button"></sup>
         <sup class="fa-solid fa-screwdriver-wrench" id="gamestate-recovery"></sup></span>
         <ul class="navbar-nav flex-row" >
             <!---
@@ -589,6 +589,7 @@ $('#submit-file').on("click",function(e){
     e.preventDefault();
     $('#files').parse({
         config: { 
+            encoding: "ISO-8859-1", // CK request 2024-02-25, added the only change from quizreader13. Everything else is the same.
             delimiter: "",
             newline: "",
             complete: loadCSV,
